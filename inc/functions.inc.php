@@ -1,11 +1,11 @@
 <?php
 
-function  retrieveEntries($db,$page,$url)
+function  retrieveEntries($db,$page,$url=NULL)
 {
 	if(isset($url))
 	{
 		$e=NULL;
-		$sql = "SELECT id,image,page,title,entry
+		$sql = "SELECT id,image,page,title,entry,created
 		FROM entries
 		WHERE url=?
 		LIMIT 1";
@@ -18,7 +18,7 @@ function  retrieveEntries($db,$page,$url)
 	}
 	else
 	{
-				$sql = "SELECT id,image,page,title,entry,url FROM entries WHERE page=? ORDER BY created DESC";
+				$sql = "SELECT id,image,page,title,entry,url,created FROM entries WHERE page=? ORDER BY created DESC";
 			    /* error in sq query* above*/
 			    $stmt = $db->prepare($sql);
 				
@@ -134,5 +134,24 @@ function FormatImages($img=NULL,$alt=NULL)
 	}
 }
 
+function createUserForm()
+{
+return <<<FORM
+<fieldset>
+<legend>Add new user</legend>
+<form action="/simple_blog/inc/update.inc.php" method="post">
+<label>Username:
+<input type="text" name="username" />
+</label>
+<label>Password:
+<input type="password" name="password"/>
+</label>
+<input type="hidden" name="action"  value="createuser"/>
+<input type="submit" name ="submit" value="sign up"/>
+<input type="submit" name ="submit" value="Cancel"/>
+</form>
+</fieldset>	
+FORM;
+}
 
 ?>

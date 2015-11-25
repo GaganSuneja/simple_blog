@@ -29,6 +29,8 @@ class ImageHandler
       return;
     }
     
+    // resizes the image    
+	$this->doImageResize($tmp);
     
     //	check if the directory exist
      $this->checkSaveDir();
@@ -46,12 +48,12 @@ class ImageHandler
      // store the absolute path to move the file
      $absolute= $_SERVER['DOCUMENT_ROOT'].$filepath;
 
+
+
      if(!move_uploaded_file($tmp, $absolute))
     {
       throw new Exception("Couldn't save the uploaded file!");
     }
-	// resizes the image  	
-  	$this->doImageResize($tmp);
     return $filepath;
  }
 
@@ -131,9 +133,9 @@ class ImageHandler
  *@param  string $img the path to the upload
  *@return array the new  and the orignal dimensions of the image
  */
-	private function getImageDimensions($img)
+	private function getImageDimensions($tmp)
 	{
-		list($src_w,$src_h)=getimagesize($img);
+		list($src_w,$src_h)=getimagesize($tmp);
 		
 		list($max_w,$max_h)=$this->max_dims;
 
@@ -170,9 +172,9 @@ class ImageHandler
  * @return array to the specific image-type function to use
 */
 
-private function getImageFunction($img)
+private function getImageFunction($tmp)
 {
-	$info = getImagesize($img);
+	$info = getImagesize($tmp);
 
 	switch($info['mime'])
 	{
@@ -202,21 +204,21 @@ private function getImageFunction($img)
  *@return VOID
 */
 
-private function doImageResize($img)
+private function doImageResize($tmp)
 {
 	// Determine te new dimensions
-	$d = $this->getImageDimensions($img);
+	$d = $this->getImageDimensions($tmp);
 	// Determine what function to use
-	$func = $this->getImageFunction($img); 
+	$func = $this->getImageFunction($tmp); 
 	
 	// Create the image resources for resampling
-       $src_img = $func[0]($img);
+       $src_img = $func[0]($tmp);
        $new_img = imagecreatetruecolor($d[0], $d[1]);
 
 	if(imagecopyresampled($new_img, $src_img, 0, 0, 0, 0, $d[0], $d[1], $d[2], $d[3]))
 	{
 		imagedestroy($src_img);
-		if($new_img && $func[1]($new_img,$img))	
+		if($new_img && $func[1]($new_img,$tmp))	
 		{
 			imagedestroy($new_img);
 		}

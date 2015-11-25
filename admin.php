@@ -1,5 +1,8 @@
 <?php
+session_start();
 
+if(isset($_SESSION['loggedin']) && $_SESSION['loggedin']==1)
+{
 include_once 'inc/functions.inc.php';
 include_once 'inc/db.inc.php';
 
@@ -57,6 +60,11 @@ if(isset($_GET['url']))
 else
 {
 
+	if($page=='createUser')
+	{
+		$create=createUserForm();
+	}
+
 	 $legend = "New Entry Submission";
 
 	 $id = NULL;
@@ -77,14 +85,18 @@ else
 	<title> Simple Blog </title>
 </head>
 <body>
-	<h1> Simple Blog Application </h1>
+	<h1> Simple Blog Application !!!!</h1>
 <?php
 		  if($page=='delete')
 		  {
 		  	echo $confirm;
-		  }		  
-		  
-		  else{
+		  }	
+		  if($page=='createUser')	  
+		  {
+		  	echo $create;
+		  }
+		  else
+		  {
 
  ?>
 			 <form method="post" enctype="multipart/form-data"action="/simple_blog/inc/update.inc.php">
@@ -107,8 +119,46 @@ else
 			</form>
 
 <?php  
-   	         }
+}
 ?>
-
 </body>
 </html>
+
+<?php 	
+}
+else
+{
+?>
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type"
+	content="text/html;charset=utf-8" />
+	<link rel="stylesheet" href="/css/default.css" type="text/css"/>
+	<title> PLease Log IN </title>
+</head>
+<body>
+	<h1> Log IN </h1>
+	        <form method="post" action="/simple_blog/inc/update.inc.php">
+				<fieldset>
+					<legend>Please Log In</legend>
+					<label>Title
+						<input type="text" name="username" maxlength="170" />
+					</label>
+					<label>Password
+						<input type="password" name="password"/>	
+					</label>
+					<input type="hidden" name="action" value="Login"/>
+					<input type="submit" name="submit" value="LogIn" />
+				</fieldset>
+			</form>
+
+
+</body>	
+</html>
+
+<?php
+ }
+ ?>

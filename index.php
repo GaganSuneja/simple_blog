@@ -1,6 +1,11 @@
 <?php
+	
+
+	session_start();
+
 	include_once 'inc/db.inc.php';
 	include_once 'inc/functions.inc.php';
+	include_once 'inc/comments.inc.php';
 	
 	$db = new PDO(DB_INFO, DB_USER, DB_PASS);
 
@@ -36,6 +41,9 @@
 		<meta http-equiv="Content-Type"
 		content="text/html;charset=utf-8" />
 		<link rel="stylesheet" href="css/default.css" type="text/css"/>
+		<link rel="alternate" type="application/rss+xml"
+title="My Simple Blog - RSS 2.0"
+href="/simple_blog/feeds/rss.php" />
 		<title> Simple Blog </title>
 	</head>
 	<body>
@@ -44,6 +52,13 @@
 			<li><a href="/simple_blog/blog/">Blog</a></li>
 			<li><a href="/simple_blog/about/">About the Author</a></li>
 		</ul>
+		<?php if(isset($_SESSION['loggedin']) && $_SESSION['loggedin']==1): ?>
+			<p id="control_panel">
+								You are logged in!
+				<a href="/simple_blog/inc/update.inc.php?action=logout">Log
+									out</a>.
+				</p>
+		<?php endif; ?>
 		<div id="entries">
 <?php
 			// If the full display flag is set, show the entry
@@ -52,12 +67,31 @@
 			{
 
 			// Get the url if was not passed
-			 
 			 $url = (isset($url)) ? $url : $e['url'];
-			 
-			 $admin=adminLinks($page,$url); 
+			 if(isset($_SESSION['loggedin'])&&$_SESSION['loggedin']==1)
+			 {
+			 	$admin=adminLinks($page,$url); 
+			 }
+			 else
+			 {
+			 	$admin = array('edit'=>NULL,'delete'=>NULL);
+			 }
 
 			 $imagee = FormatImages($e['image'],$e['title']);
+
+			 if($page=='blog')
+			 {
+			 	// Load the comment object
+			 	include_once 'inc/comments.inc.php';
+			 	$comments = new Comments();
+			 	$comment_disp = $comments->showComments($e['id']);
+			    $comments_form =$comments->showCommentForm($e['id']);
+			 	
+			 }
+			 else
+			 {
+			 	$comments_form = NULL;
+			 }
 
 ?>				
 				<h2> <?php  echo $e['title']; ?> </h2>
@@ -72,13 +106,13 @@
 						 }
 					?>
 				</p>
-
 				<?php if($page=='blog'): ?>
 				<p class="backlink">
 					<a href="/simple_blog/">Back to Latest Entries</a>
 				</p>
-				<?php endif;?>
-				<?php
+				<h3> Comments for This Entry </h3>
+				<?php echo $comment_disp,	$comments_form; endif; ?>
+			<?php
 			} // End the if statement
 			else
 			{
@@ -91,12 +125,32 @@
 			<?php
 					} // End the foreach loop
 				} // End the else
-			?>
-			
+			 ?>
 			<p class="backlink">
-				<a href="/simple_blog/admin.php">
+				<?php
+				if($page=='blog'&&isset($_SESSION['loggedin'])&&$_SESSION['loggedin']==1)
+			    {
+			    ?>
+				<a href="/simple_blog/admin/">
 				Post a New Entry
 				</a>
+			   <?php
+				}
+			    else
+			    {
+			    
+			    ?>
+			 	<a href="/simple_blog/admin/">Login!</a>
+			 	<a href="/simple_blog/admin/createUser">SignUp</a>
+			 	<?php
+			    }
+			 	?>
+			 </p>
+			 </div>			
+			<p>
+			<a href="/simple_blog/feeds/rss.php">
+				Suscribe via RSS!
+			</a>	
 			</p>
 		</div>
 	</body>
