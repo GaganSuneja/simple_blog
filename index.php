@@ -87,10 +87,13 @@ href="/simple_blog/feeds/rss.php" />
 			 	$comment_disp = $comments->showComments($e['id']);
 			    $comments_form =$comments->showCommentForm($e['id']);
 			 	
+			 	//Generate a post to twitter link;
+			 	$twitter = postToTwitter($e['title']);
 			 }
 			 else
 			 {
 			 	$comments_form = NULL;
+			 	$twitter 	   = NULL;
 			 }
 
 ?>				
@@ -109,6 +112,7 @@ href="/simple_blog/feeds/rss.php" />
 				<?php if($page=='blog'): ?>
 				<p class="backlink">
 					<a href="/simple_blog/">Back to Latest Entries</a>
+					<a href="<?php echo $twitter?>">Post TO Twitter!</a></br>
 				</p>
 				<h3> Comments for This Entry </h3>
 				<?php echo $comment_disp,	$comments_form; endif; ?>
@@ -141,11 +145,11 @@ href="/simple_blog/feeds/rss.php" />
 			    
 			    ?>
 			 	<a href="/simple_blog/admin/">Login!</a>
-			 	<a href="/simple_blog/admin/createUser">SignUp</a>
 			 	<?php
 			    }
 			 	?>
 			 </p>
+			 <a href="/simple_blog/admin/createUser">SignUp</a>
 			 </div>			
 			<p>
 			<a href="/simple_blog/feeds/rss.php">
